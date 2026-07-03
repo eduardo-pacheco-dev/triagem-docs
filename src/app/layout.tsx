@@ -16,9 +16,7 @@ export const metadata: Metadata = {
     title: "IBM Document Intake — Check-in e Fila de Análise",
     description: "Plataforma de check-in e fila de espera para análise de documentos.",
   },
-  icons: {
-    icon: "/favicon.ico",
-  },
+
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
