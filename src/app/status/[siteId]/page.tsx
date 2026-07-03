@@ -47,6 +47,7 @@ export default function StatusPage() {
   const params = useParams<{ siteId: string }>()
   const siteId = params.siteId ?? ""
   const [entries, setEntries] = useState<QueueEntry[]>([])
+  const [position, setPosition] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -54,7 +55,12 @@ export default function StatusPage() {
     let mounted = true
     setLoading(true)
     fetchBySiteId(siteId)
-      .then((rows) => mounted && setEntries(rows))
+      .then((result) => {
+        if (mounted) {
+          setEntries(result.entries)
+          setPosition(result.position)
+        }
+      })
       .catch(() => mounted && setError("Erro ao buscar status."))
       .finally(() => mounted && setLoading(false))
 
@@ -69,7 +75,12 @@ export default function StatusPage() {
           filter: `site_id=eq.${siteId}`,
         },
         () => {
-          fetchBySiteId(siteId).then((rows) => mounted && setEntries(rows))
+          fetchBySiteId(siteId).then((result) => {
+            if (mounted) {
+              setEntries(result.entries)
+              setPosition(result.position)
+            }
+          })
         },
       )
       .subscribe((status) => {
@@ -132,6 +143,14 @@ export default function StatusPage() {
                   {statusLabel[latest.status]}
                 </Tag>
               </div>
+              {position !== null && (
+                <div>
+                  <div className="field-label">Posição na fila</div>
+                  <div style={{ fontSize: "1.75rem", fontWeight: 300, fontFamily: "IBM Plex Mono, monospace" }}>
+                    #{position}
+                  </div>
+                </div>
+              )}
 
               <ProgressIndicator
                 currentIndex={currentStep(latest.status)}

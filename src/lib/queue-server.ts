@@ -136,12 +136,26 @@ export async function fetchArchivedQueue(): Promise<QueueEntry[]> {
   return mapEntryList(entries)
 }
 
-export async function fetchBySiteId(siteId: string): Promise<QueueEntry[]> {
+export async function fetchBySiteId(siteId: string): Promise<{
+  entries: QueueEntry[]
+  position: number | null
+}> {
   const entries = await prisma.queueEntry.findMany({
     where: { siteId: siteId.trim() },
     orderBy: { createdAt: "desc" },
   })
-  return mapEntryList(entries)
+  const latest = entries[0]
+  let position: number | null = null
+  if (latest && (latest.status === "waiting" || latest.status === "in_review")) {
+    const ahead = await prisma.queueEntry.count({
+      where: {
+        status: { in: ["waiting", "in_review"] },
+        positionSeq: { lt: latest.positionSeq },
+      },
+    })
+    position = ahead + 1
+  }
+  return { entries: mapEntryList(entries), position }
 }
 
 export async function updateStatus(id: string, status: string) {
