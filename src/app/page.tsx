@@ -18,12 +18,11 @@ import { ArrowRight, Restart, Search } from "@carbon/icons-react"
 import { supabase } from "@/lib/supabase/client"
 import { AppHeader } from "@/components/AppHeader"
 import {
-  fetchRequestTypes,
   statusLabel,
   type QueueEntry,
   type RequestType,
 } from "@/lib/queue"
-import { createCheckIn } from "@/lib/queue-actions"
+import { createCheckIn, fetchRequestTypes } from "@/lib/queue-server"
 
 export default function CheckInPage() {
   const router = useRouter()

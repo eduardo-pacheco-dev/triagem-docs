@@ -23,12 +23,11 @@ import { PlayFilledAlt, CheckmarkFilled, CloseFilled, Settings } from "@carbon/i
 import { supabase } from "@/lib/supabase/client"
 import { AppHeader } from "@/components/AppHeader"
 import {
-  fetchActiveQueue,
   statusLabel,
   type QueueEntry,
   type QueueStatus,
 } from "@/lib/queue"
-import { updateStatus } from "@/lib/queue-actions"
+import { fetchActiveQueue, updateStatus } from "@/lib/queue-server"
 
 const statusClass: Record<QueueStatus, string> = {
   waiting: "status-tag-waiting",
@@ -44,7 +43,7 @@ const statusTagType: Record<QueueStatus, "gray" | "blue" | "green" | "red"> = {
   rejected: "red",
 }
 
-function formatTime(iso: string) {
+function formatTime(iso: string | Date) {
   return new Date(iso).toLocaleTimeString("pt-BR", {
     hour: "2-digit",
     minute: "2-digit",

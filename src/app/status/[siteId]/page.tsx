@@ -17,11 +17,11 @@ import { ArrowLeft } from "@carbon/icons-react"
 import { supabase } from "@/lib/supabase/client"
 import { AppHeader } from "@/components/AppHeader"
 import {
-  fetchBySiteId,
   statusLabel,
   type QueueEntry,
   type QueueStatus,
 } from "@/lib/queue"
+import { fetchBySiteId } from "@/lib/queue-server"
 
 
 const tagType: Record<QueueStatus, "gray" | "blue" | "green" | "red"> = {

@@ -16,10 +16,9 @@ import { Add, TrashCan, ArrowLeft } from "@carbon/icons-react"
 import { supabase } from "@/lib/supabase/client"
 import { AppHeader } from "@/components/AppHeader"
 import {
-  fetchRequestTypes,
   type RequestType,
 } from "@/lib/queue"
-import { addRequestType, deleteRequestType } from "@/lib/queue-actions"
+import { fetchRequestTypes, addRequestType, deleteRequestType } from "@/lib/queue-server"
 
 export default function ConfigPage() {
   const [types, setTypes] = useState<RequestType[]>([])
