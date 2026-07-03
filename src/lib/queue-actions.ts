@@ -1,6 +1,7 @@
 "use server"
 
-import { createServerClient } from "@/lib/supabase/server"
+import { auth } from "@/lib/auth"
+import { createServerClient, createAdminClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
 import type { QueueEntry, QueueStatus, RequestType } from "./queue"
 
@@ -40,8 +41,22 @@ export async function createCheckIn(input: {
   return data as QueueEntry
 }
 
+async function requireAdmin() {
+  const session = await auth()
+  if (!session?.user) {
+    throw new Error("Unauthorized: authentication required")
+  }
+  const missing = !process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (missing) {
+    throw new Error(
+      "SUPABASE_SERVICE_ROLE_KEY not configured. Admin operations require the service role key.",
+    )
+  }
+  return createAdminClient()
+}
+
 export async function updateStatus(id: string, status: QueueStatus) {
-  const supabase = await createServerClient()
+  const supabase = await requireAdmin()
   const { error } = await supabase
     .from("queue_entries")
     .update({ status })
@@ -52,7 +67,7 @@ export async function updateStatus(id: string, status: QueueStatus) {
 }
 
 export async function addRequestType(name: string): Promise<RequestType> {
-  const supabase = await createServerClient()
+  const supabase = await requireAdmin()
   const { data, error } = await supabase
     .from("request_types")
     .insert({ name: name.trim() })
@@ -65,7 +80,7 @@ export async function addRequestType(name: string): Promise<RequestType> {
 }
 
 export async function deleteRequestType(id: string) {
-  const supabase = await createServerClient()
+  const supabase = await requireAdmin()
   const { error } = await supabase
     .from("request_types")
     .delete()
