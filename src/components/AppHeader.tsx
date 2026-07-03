@@ -1,59 +1,94 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
+
 import { useSession, signOut } from "next-auth/react"
 import {
   Header,
   HeaderName,
-  HeaderNavigation,
-  HeaderMenuItem,
   HeaderGlobalBar,
   HeaderGlobalAction,
+  SideNav,
+  SideNavItems,
+  SideNavLink,
 } from "@carbon/react"
-import { Logout } from "@carbon/icons-react"
+import {
+  Logout,
+  Login,
+  Document,
+  List,
+  Settings,
+} from "@carbon/icons-react"
 
 export function AppHeader() {
   const pathname = usePathname()
-  const router = useRouter()
   const { data: session } = useSession()
   const authed = !!session
 
   return (
-    <Header aria-label="Check-in de Documentos">
-      <HeaderName as={Link} href="/" prefix="IBM">
-        Document Intake
-      </HeaderName>
-      <HeaderNavigation aria-label="Navegação principal">
-        <HeaderMenuItem as={Link} href="/" isActive={pathname === "/"}>
-          Check-in
-        </HeaderMenuItem>
-        {authed && (
-          <>
-            <HeaderMenuItem as={Link} href="/admin" isActive={pathname === "/admin"}>
-              Fila
-            </HeaderMenuItem>
-            <HeaderMenuItem
-              as={Link}
-              href="/admin/configuracoes"
-              isActive={pathname.startsWith("/admin/configuracoes")}
+    <>
+      <Header aria-label="IBM Document Intake">
+        <HeaderName as={Link} href="/" prefix="IBM">
+          Document Intake
+        </HeaderName>
+        <HeaderGlobalBar>
+          {authed && (
+            <HeaderGlobalAction
+              aria-label="Sair"
+              onClick={() => signOut({ callbackUrl: "/login" })}
+              tooltipAlignment="end"
             >
-              Configurações
-            </HeaderMenuItem>
-          </>
-        )}
-      </HeaderNavigation>
-      <HeaderGlobalBar>
-        {authed && (
-          <HeaderGlobalAction
-            aria-label="Sair"
-            onClick={() => signOut({ callbackUrl: "/login" })}
-            tooltipAlignment="end"
+              <Logout />
+            </HeaderGlobalAction>
+          )}
+        </HeaderGlobalBar>
+      </Header>
+      <SideNav
+        isFixedNav
+        aria-label="Navegação principal"
+        expanded
+      >
+        <SideNavItems>
+          <SideNavLink
+            as={Link}
+            href="/"
+            renderIcon={Document}
+            isActive={pathname === "/"}
           >
-            <Logout />
-          </HeaderGlobalAction>
-        )}
-      </HeaderGlobalBar>
-    </Header>
+            Check-in
+          </SideNavLink>
+          {authed ? (
+            <>
+              <SideNavLink
+                as={Link}
+                href="/admin"
+                renderIcon={List}
+                isActive={pathname === "/admin"}
+              >
+                Fila
+              </SideNavLink>
+              <SideNavLink
+                as={Link}
+                href="/admin/configuracoes"
+                renderIcon={Settings}
+                isActive={pathname.startsWith("/admin/configuracoes")}
+              >
+                Configurações
+              </SideNavLink>
+            </>
+          ) : (
+            <SideNavLink
+              as={Link}
+              href="/login"
+              renderIcon={Login}
+              isActive={pathname === "/login"}
+            >
+              Entrar
+            </SideNavLink>
+          )}
+        </SideNavItems>
+      </SideNav>
+    </>
   )
 }
