@@ -16,6 +16,7 @@ import {
 import {
   Logout,
   Login,
+  Dashboard,
   Document,
   List,
   Settings,
@@ -60,6 +61,14 @@ export function AppHeader() {
           expanded
         >
           <SideNavItems>
+            <SideNavLink
+              as={Link}
+              href="/admin/dashboard"
+              renderIcon={Dashboard}
+              isActive={pathname.startsWith("/admin/dashboard")}
+            >
+              Dashboard
+            </SideNavLink>
             <SideNavLink
               as={Link}
               href="/"

@@ -256,6 +256,49 @@ export async function deleteRequestType(id: string) {
   }
 }
 
+export async function fetchDashboard() {
+  await requireAdmin()
+
+  const [total, byStatus, recent, slaData] = await Promise.all([
+    prisma.queueEntry.count(),
+    Promise.all(
+      (["waiting", "in_review", "approved", "rejected"] as const).map((s) =>
+        prisma.queueEntry.count({ where: { status: s } }),
+      ),
+    ),
+    prisma.queueEntry.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 10,
+    }),
+    prisma.queueEntry.findMany({
+      where: { completedAt: { not: null }, startedAt: { not: null } },
+      select: { createdAt: true, startedAt: true, completedAt: true },
+    }),
+  ])
+
+  const [waiting, inReview, approved, rejected] = byStatus
+
+  let avgWaitSec = 0
+  let avgServiceSec = 0
+  if (slaData.length > 0) {
+    const waitSum = slaData.reduce((acc, e) => acc + (e.startedAt!.getTime() - e.createdAt.getTime()), 0)
+    const serviceSum = slaData.reduce((acc, e) => acc + (e.completedAt!.getTime() - e.startedAt!.getTime()), 0)
+    avgWaitSec = Math.round(waitSum / slaData.length / 1000)
+    avgServiceSec = Math.round(serviceSum / slaData.length / 1000)
+  }
+
+  return {
+    total,
+    waiting,
+    inReview,
+    approved,
+    rejected,
+    avgWaitMin: Math.round(avgWaitSec / 60),
+    avgServiceMin: Math.round(avgServiceSec / 60),
+    recent: mapEntryList(recent),
+  }
+}
+
 export async function changePassword(data: {
   currentPassword: string
   newPassword: string
