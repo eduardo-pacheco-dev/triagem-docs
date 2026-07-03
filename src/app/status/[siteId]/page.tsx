@@ -72,7 +72,11 @@ export default function StatusPage() {
           fetchBySiteId(siteId).then((rows) => mounted && setEntries(rows))
         },
       )
-      .subscribe()
+      .subscribe((status) => {
+        if (status === "CHANNEL_ERROR") {
+          console.warn("[Realtime] queue_entries channel error")
+        }
+      })
 
     return () => {
       mounted = false

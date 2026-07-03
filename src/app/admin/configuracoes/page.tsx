@@ -43,7 +43,11 @@ export default function ConfigPage() {
           fetchRequestTypes().then((rows) => mounted && setTypes(rows))
         },
       )
-      .subscribe()
+      .subscribe((status) => {
+        if (status === "CHANNEL_ERROR") {
+          console.warn("[Realtime] request_types channel error")
+        }
+      })
 
     return () => {
       mounted = false

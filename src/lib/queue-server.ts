@@ -1,8 +1,10 @@
 "use server"
 
 import { z } from "zod"
+import { headers } from "next/headers"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
+import { checkRateLimit } from "@/lib/rate-limit"
 import { revalidatePath } from "next/cache"
 import type { QueueEntry, QueueStatus, RequestType } from "./queue"
 
@@ -78,6 +80,12 @@ async function requireAdmin() {
 }
 
 export async function createCheckIn(input: z.infer<typeof createSchema>) {
+  const h = await headers()
+  const ip = h.get("x-forwarded-for") ?? h.get("x-real-ip") ?? "unknown"
+  if (!checkRateLimit(`createCheckIn:${ip}`)) {
+    throw new Error("Muitas solicitações. Aguarde um minuto.")
+  }
+
   const parsed = createSchema.safeParse(input)
   if (!parsed.success) {
     throw new Error(parsed.error.errors[0].message)
@@ -157,6 +165,12 @@ export async function fetchRequestTypes(): Promise<RequestType[]> {
 
 export async function addRequestType(name: string): Promise<RequestType> {
   await requireAdmin()
+
+  const h = await headers()
+  const ip = h.get("x-forwarded-for") ?? h.get("x-real-ip") ?? "unknown"
+  if (!checkRateLimit(`addRequestType:${ip}`)) {
+    throw new Error("Muitas solicitações. Aguarde um minuto.")
+  }
 
   const parsed = nameSchema.safeParse(name)
   if (!parsed.success) {
