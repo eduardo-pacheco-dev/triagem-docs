@@ -29,9 +29,9 @@ export function AppHeader() {
 
   return (
     <>
-      <Header aria-label="IBM Document Intake">
-        <HeaderName as={Link} href="/" prefix="IBM">
-          Document Intake
+      <Header aria-label="AFL Engenharia">
+        <HeaderName as={Link} href="/" prefix="AFL">
+          Triagem Docs
         </HeaderName>
         <HeaderGlobalBar>
           {authed ? (
