@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 
 import { useSession, signOut } from "next-auth/react"
 import {
@@ -15,6 +15,7 @@ import {
 } from "@carbon/react"
 import {
   Logout,
+  Login,
   Document,
   List,
   Settings,
@@ -22,6 +23,7 @@ import {
 
 export function AppHeader() {
   const pathname = usePathname()
+  const router = useRouter()
   const { data: session } = useSession()
   const authed = !!session
 
@@ -32,13 +34,21 @@ export function AppHeader() {
           Document Intake
         </HeaderName>
         <HeaderGlobalBar>
-          {authed && (
+          {authed ? (
             <HeaderGlobalAction
               aria-label="Sair"
               onClick={() => signOut({ callbackUrl: "/login" })}
               tooltipAlignment="end"
             >
               <Logout />
+            </HeaderGlobalAction>
+          ) : (
+            <HeaderGlobalAction
+              aria-label="Entrar"
+              tooltipAlignment="end"
+              onClick={() => router.push("/login")}
+            >
+              <Login />
             </HeaderGlobalAction>
           )}
         </HeaderGlobalBar>
