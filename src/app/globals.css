@@ -34,7 +34,7 @@ code, .mono, .cds--snippet {
   margin: 0 auto;
 }
 
-.app-shell .app-main {
+.app-shell:has(.cds--side-nav) .app-main {
   margin-left: 16rem;
 }
 

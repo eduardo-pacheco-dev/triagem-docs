@@ -15,7 +15,6 @@ import {
 } from "@carbon/react"
 import {
   Logout,
-  Login,
   Document,
   List,
   Settings,
@@ -44,51 +43,40 @@ export function AppHeader() {
           )}
         </HeaderGlobalBar>
       </Header>
-      <SideNav
-        isFixedNav
-        aria-label="Navegação principal"
-        expanded
-      >
-        <SideNavItems>
-          <SideNavLink
-            as={Link}
-            href="/"
-            renderIcon={Document}
-            isActive={pathname === "/"}
-          >
-            Check-in
-          </SideNavLink>
-          {authed ? (
-            <>
-              <SideNavLink
-                as={Link}
-                href="/admin"
-                renderIcon={List}
-                isActive={pathname === "/admin"}
-              >
-                Fila
-              </SideNavLink>
-              <SideNavLink
-                as={Link}
-                href="/admin/configuracoes"
-                renderIcon={Settings}
-                isActive={pathname.startsWith("/admin/configuracoes")}
-              >
-                Configurações
-              </SideNavLink>
-            </>
-          ) : (
+      {authed && (
+        <SideNav
+          isFixedNav
+          aria-label="Navegação principal"
+          expanded
+        >
+          <SideNavItems>
             <SideNavLink
               as={Link}
-              href="/login"
-              renderIcon={Login}
-              isActive={pathname === "/login"}
+              href="/"
+              renderIcon={Document}
+              isActive={pathname === "/"}
             >
-              Entrar
+              Check-in
             </SideNavLink>
-          )}
-        </SideNavItems>
-      </SideNav>
+            <SideNavLink
+              as={Link}
+              href="/admin"
+              renderIcon={List}
+              isActive={pathname === "/admin"}
+            >
+              Fila
+            </SideNavLink>
+            <SideNavLink
+              as={Link}
+              href="/admin/configuracoes"
+              renderIcon={Settings}
+              isActive={pathname.startsWith("/admin/configuracoes")}
+            >
+              Configurações
+            </SideNavLink>
+          </SideNavItems>
+        </SideNav>
+      )}
     </>
   )
 }
