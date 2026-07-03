@@ -188,19 +188,23 @@ export default function AdminQueuePage() {
                 <Table {...getTableProps()}>
                   <TableHead>
                     <TableRow>
-                      {h.map((header) => (
-                        <TableHeader {...getHeaderProps({ header, key: header.key })}>
-                          {header.header}
-                        </TableHeader>
-                      ))}
+                      {h.map((header) => {
+                        const { key: hk, ...hp } = getHeaderProps({ header })
+                        return (
+                          <TableHeader key={hk} {...hp}>
+                            {header.header}
+                          </TableHeader>
+                        )
+                      })}
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {r.map((row) => {
                       const entry = rows.find((x) => x.id === row.id)!._entry
                       const busy = !!pending[entry.id]
+                      const { key: rk, ...rp } = getRowProps({ row })
                       return (
-                        <TableRow {...getRowProps({ row })}>
+                        <TableRow key={rk} {...rp}>
                           {row.cells.map((cell) => {
                             if (cell.info.header === "site_id") {
                               return (
