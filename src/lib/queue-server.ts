@@ -1,6 +1,7 @@
 "use server"
 
 import { z } from "zod"
+import bcrypt from "bcryptjs"
 import { headers } from "next/headers"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/lib/auth"
@@ -228,4 +229,29 @@ export async function deleteRequestType(id: string) {
     console.error("[deleteRequestType]", error)
     throw new Error("Erro ao remover tipo.")
   }
+}
+
+export async function changePassword(data: {
+  currentPassword: string
+  newPassword: string
+}) {
+  const session = await auth()
+  if (!session?.user?.id) throw new Error("Unauthorized")
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+  })
+  if (!user) throw new Error("User not found")
+
+  const valid = await bcrypt.compare(data.currentPassword, user.passwordHash)
+  if (!valid) throw new Error("Senha atual incorreta.")
+
+  const parsed = z.string().min(6, "A nova senha deve ter no mínimo 6 caracteres").safeParse(data.newPassword)
+  if (!parsed.success) throw new Error(parsed.error.errors[0].message)
+
+  const hash = await bcrypt.hash(parsed.data, 10)
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { passwordHash: hash },
+  })
 }
