@@ -63,6 +63,8 @@ export default function ConfigPage() {
     try {
       await addRequestType(name)
       setName("")
+      const rows = await fetchRequestTypes()
+      setTypes(rows)
     } catch (err) {
       setError("Erro ao adicionar tipo.")
     } finally {
@@ -74,6 +76,8 @@ export default function ConfigPage() {
     setError(null)
     try {
       await deleteRequestType(id)
+      const rows = await fetchRequestTypes()
+      setTypes(rows)
     } catch (err) {
       setError("Erro ao remover tipo.")
     }

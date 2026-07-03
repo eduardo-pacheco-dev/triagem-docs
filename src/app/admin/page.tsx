@@ -88,6 +88,8 @@ export default function AdminQueuePage() {
     setPending((p) => ({ ...p, [id]: true }))
     try {
       await updateStatus(id, status)
+      const rows = await fetchActiveQueue()
+      setEntries(rows)
     } catch (err) {
       setError("Falha ao atualizar.")
     } finally {
