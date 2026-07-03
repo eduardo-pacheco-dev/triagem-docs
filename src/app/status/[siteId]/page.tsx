@@ -22,6 +22,7 @@ import {
   type QueueStatus,
 } from "@/lib/queue"
 import { fetchBySiteId } from "@/lib/queue-server"
+import { slaLabel } from "@/lib/duration"
 
 
 const tagType: Record<QueueStatus, "gray" | "blue" | "green" | "red"> = {
@@ -151,6 +152,30 @@ export default function StatusPage() {
                   </div>
                 </div>
               )}
+
+              {latest.status !== "waiting" && (() => {
+                const { wait, service, total } = slaLabel(latest)
+                return (
+                  <div className="detail-grid" style={{ marginTop: "0.5rem" }}>
+                    <div>
+                      <div className="field-label">Espera</div>
+                      <div style={{ fontFamily: "IBM Plex Mono, monospace", fontSize: "0.875rem" }}>{wait}</div>
+                    </div>
+                    {service && (
+                      <div>
+                        <div className="field-label">Atendimento</div>
+                        <div style={{ fontFamily: "IBM Plex Mono, monospace", fontSize: "0.875rem" }}>{service}</div>
+                      </div>
+                    )}
+                    {total && (
+                      <div>
+                        <div className="field-label">Total</div>
+                        <div style={{ fontFamily: "IBM Plex Mono, monospace", fontSize: "0.875rem" }}>{total}</div>
+                      </div>
+                    )}
+                  </div>
+                )
+              })()}
 
               <ProgressIndicator
                 currentIndex={currentStep(latest.status)}

@@ -28,6 +28,7 @@ import {
   type QueueStatus,
 } from "@/lib/queue"
 import { fetchActiveQueue, updateStatus } from "@/lib/queue-server"
+import { slaLabel } from "@/lib/duration"
 
 const statusClass: Record<QueueStatus, string> = {
   waiting: "status-tag-waiting",
@@ -104,6 +105,7 @@ export default function AdminQueuePage() {
 
   const rows = entries.map((e) => {
     const activeIdx = activeQueue.findIndex((a) => a.id === e.id)
+    const { wait } = slaLabel(e)
     return {
       id: e.id,
       position: `#${activeIdx + 1}`,
@@ -112,6 +114,7 @@ export default function AdminQueuePage() {
       request_type: e.request_type,
       protocol: e.protocol,
       time: formatTime(e.created_at),
+      sla: wait,
       statusRaw: e.status,
       _entry: e,
     }
@@ -124,6 +127,7 @@ export default function AdminQueuePage() {
     { key: "request_type", header: "Tipo" },
     { key: "protocol", header: "Protocolo" },
     { key: "time", header: "Entrada" },
+    { key: "sla", header: "SLA" },
     { key: "statusRaw", header: "Status" },
     { key: "actions", header: "Ações" },
   ]
@@ -229,6 +233,13 @@ export default function AdminQueuePage() {
                               return (
                                 <TableCell key={cell.id}>
                                   <span className="mono">#{cell.value}</span>
+                                </TableCell>
+                              )
+                            }
+                            if (cell.info.header === "sla") {
+                              return (
+                                <TableCell key={cell.id}>
+                                  <span style={{ color: "#525252", fontSize: "0.875rem" }}>{cell.value}</span>
                                 </TableCell>
                               )
                             }

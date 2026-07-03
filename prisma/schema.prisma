@@ -8,17 +8,19 @@ datasource db {
 }
 
 model QueueEntry {
-  id              String   @id @default(uuid()) @db.Uuid
-  protocol        String   @unique
-  fullName        String   @map("full_name")
+  id              String    @id @default(uuid()) @db.Uuid
+  protocol        String    @unique
+  fullName        String    @map("full_name")
   identifier      String
-  siteId          String   @map("site_id")
-  technicianName  String   @map("technician_name")
-  requestType     String   @map("request_type")
-  status          String   @default("waiting")
-  positionSeq     BigInt   @default(autoincrement()) @map("position_seq")
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
+  siteId          String    @map("site_id")
+  technicianName  String    @map("technician_name")
+  requestType     String    @map("request_type")
+  status          String    @default("waiting")
+  positionSeq     BigInt    @default(autoincrement()) @map("position_seq")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  startedAt       DateTime? @map("started_at")
+  completedAt     DateTime? @map("completed_at")
 
   @@index([siteId], name: "queue_entries_site_id_idx")
   @@map("queue_entries")

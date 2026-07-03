@@ -12,6 +12,8 @@ export interface QueueEntry {
   position_seq: number
   created_at: Date
   updated_at: Date
+  started_at?: Date
+  completed_at?: Date
 }
 
 export interface RequestType {

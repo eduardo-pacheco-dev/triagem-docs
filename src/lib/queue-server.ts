@@ -35,6 +35,8 @@ function mapEntry(e: Awaited<ReturnType<typeof prisma.queueEntry.findFirst>>): Q
     position_seq: Number(e.positionSeq),
     created_at: e.createdAt,
     updated_at: e.updatedAt,
+    started_at: e.startedAt ?? undefined,
+    completed_at: e.completedAt ?? undefined,
   }
 }
 
@@ -53,6 +55,8 @@ function mapEntryList(entries: Awaited<ReturnType<typeof prisma.queueEntry.findM
       position_seq: Number(e.positionSeq),
       created_at: e.createdAt,
       updated_at: e.updatedAt,
+      started_at: e.startedAt ?? undefined,
+      completed_at: e.completedAt ?? undefined,
     }))
 }
 
@@ -168,9 +172,30 @@ export async function updateStatus(id: string, status: string) {
   }
 
   try {
+    const current = await prisma.queueEntry.findUnique({ where: { id } })
+    if (!current) throw new Error("Entry not found")
+
+    const slaData: {
+      startedAt?: Date | null
+      completedAt?: Date | null
+    } = {}
+
+    if (parsedStatus.data === "in_review" && !current.startedAt) {
+      slaData.startedAt = new Date()
+    }
+    if ((parsedStatus.data === "approved" || parsedStatus.data === "rejected") && !current.completedAt) {
+      slaData.completedAt = new Date()
+    }
+    if (parsedStatus.data === "waiting") {
+      slaData.startedAt = null
+      slaData.completedAt = null
+    }
+
+    const data = { status: parsedStatus.data, ...slaData }
+
     const entry = await prisma.queueEntry.update({
       where: { id },
-      data: { status: parsedStatus.data },
+      data,
     })
     revalidatePath("/admin")
     revalidatePath("/admin/arquivados")
