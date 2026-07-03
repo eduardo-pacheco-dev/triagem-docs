@@ -205,7 +205,9 @@ export default function AdminQueuePage() {
                   </TableHead>
                   <TableBody>
                     {r.map((row) => {
-                      const entry = rows.find((x) => x.id === row.id)!._entry
+                      const found = rows.find((x) => x.id === row.id)
+                      if (!found) return null
+                      const entry = found._entry
                       const busy = !!pending[entry.id]
                       const { key: rk, ...rp } = getRowProps({ row })
                       return (
