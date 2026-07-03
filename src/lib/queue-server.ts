@@ -1,14 +1,89 @@
 "use server"
 
+import { z } from "zod"
 import { prisma } from "@/lib/prisma"
+import { auth } from "@/lib/auth"
 import { revalidatePath } from "next/cache"
 import type { QueueEntry, QueueStatus, RequestType } from "./queue"
 
-export async function createCheckIn(input: {
-  site_id: string
-  technician_name: string
-  request_type: string
-}) {
+const VALID_STATUSES = ["waiting", "in_review", "approved", "rejected"] as const
+
+const createSchema = z.object({
+  site_id: z.string().min(1, "SITE ID é obrigatório").max(100),
+  technician_name: z.string().min(1, "Nome do técnico é obrigatório").max(200),
+  request_type: z.string().min(1, "Tipo de solicitação é obrigatório").max(200),
+})
+
+const statusSchema = z.enum(VALID_STATUSES)
+
+const nameSchema = z.string().min(1, "Nome é obrigatório").max(200)
+
+function mapEntry(e: Awaited<ReturnType<typeof prisma.queueEntry.findFirst>>): QueueEntry | null {
+  if (!e) return null
+  return {
+    id: e.id,
+    protocol: e.protocol,
+    full_name: e.fullName,
+    identifier: e.identifier,
+    site_id: e.siteId,
+    technician_name: e.technicianName,
+    request_type: e.requestType,
+    status: e.status as QueueStatus,
+    position_seq: Number(e.positionSeq),
+    created_at: e.createdAt,
+    updated_at: e.updatedAt,
+  }
+}
+
+function mapEntryList(entries: Awaited<ReturnType<typeof prisma.queueEntry.findMany>>): QueueEntry[] {
+  return entries
+    .filter((e): e is NonNullable<typeof e> => e != null)
+    .map((e) => ({
+      id: e.id,
+      protocol: e.protocol,
+      full_name: e.fullName,
+      identifier: e.identifier,
+      site_id: e.siteId,
+      technician_name: e.technicianName,
+      request_type: e.requestType,
+      status: e.status as QueueStatus,
+      position_seq: Number(e.positionSeq),
+      created_at: e.createdAt,
+      updated_at: e.updatedAt,
+    }))
+}
+
+function mapType(t: Awaited<ReturnType<typeof prisma.requestType.findFirst>>): RequestType | null {
+  if (!t) return null
+  return {
+    id: t.id,
+    name: t.name,
+    created_at: t.createdAt,
+  }
+}
+
+function mapTypeList(types: Awaited<ReturnType<typeof prisma.requestType.findMany>>): RequestType[] {
+  return types.map((t) => ({
+    id: t.id,
+    name: t.name,
+    created_at: t.createdAt,
+  }))
+}
+
+async function requireAdmin() {
+  const session = await auth()
+  if (!session?.user) {
+    throw new Error("Unauthorized")
+  }
+}
+
+export async function createCheckIn(input: z.infer<typeof createSchema>) {
+  const parsed = createSchema.safeParse(input)
+  if (!parsed.success) {
+    throw new Error(parsed.error.errors[0].message)
+  }
+
+  const { site_id, technician_name, request_type } = parsed.data
   const n = Math.floor(1000 + Math.random() * 9000)
   const protocol = `DOC-${n}`
 
@@ -16,31 +91,33 @@ export async function createCheckIn(input: {
     const entry = await prisma.queueEntry.create({
       data: {
         protocol,
-        siteId: input.site_id.trim(),
-        technicianName: input.technician_name.trim(),
-        requestType: input.request_type.trim(),
-        fullName: input.technician_name.trim(),
-        identifier: input.site_id.trim(),
+        siteId: site_id.trim(),
+        technicianName: technician_name.trim(),
+        requestType: request_type.trim(),
+        fullName: technician_name.trim(),
+        identifier: site_id.trim(),
         status: "waiting",
       },
     })
 
     revalidatePath("/")
     revalidatePath("/admin")
-    return entry as unknown as QueueEntry
+    return mapEntry(entry)!
   } catch (error) {
     if (error instanceof Error && error.message.toLowerCase().includes("unique")) {
-      throw new Error("Protocolo duplicado. Tente novamente.")
+      throw new Error("Erro ao gerar protocolo. Tente novamente.")
     }
-    throw error
+    console.error("[createCheckIn]", error)
+    throw new Error("Erro ao registrar solicitação.")
   }
 }
 
 export async function fetchActiveQueue(): Promise<QueueEntry[]> {
   const entries = await prisma.queueEntry.findMany({
+    where: { status: { in: ["waiting", "in_review"] } },
     orderBy: { positionSeq: "asc" },
   })
-  return entries as unknown as QueueEntry[]
+  return mapEntryList(entries)
 }
 
 export async function fetchBySiteId(siteId: string): Promise<QueueEntry[]> {
@@ -48,35 +125,69 @@ export async function fetchBySiteId(siteId: string): Promise<QueueEntry[]> {
     where: { siteId: siteId.trim() },
     orderBy: { createdAt: "desc" },
   })
-  return entries as unknown as QueueEntry[]
+  return mapEntryList(entries)
 }
 
-export async function updateStatus(id: string, status: QueueStatus) {
-  await prisma.queueEntry.update({
-    where: { id },
-    data: { status },
-  })
-  revalidatePath("/admin")
+export async function updateStatus(id: string, status: string) {
+  await requireAdmin()
+
+  const parsedStatus = statusSchema.safeParse(status)
+  if (!parsedStatus.success) {
+    throw new Error("Status inválido.")
+  }
+
+  try {
+    await prisma.queueEntry.update({
+      where: { id },
+      data: { status: parsedStatus.data },
+    })
+    revalidatePath("/admin")
+  } catch (error) {
+    console.error("[updateStatus]", error)
+    throw new Error("Erro ao atualizar status.")
+  }
 }
 
 export async function fetchRequestTypes(): Promise<RequestType[]> {
   const types = await prisma.requestType.findMany({
     orderBy: { name: "asc" },
   })
-  return types as unknown as RequestType[]
+  return mapTypeList(types)
 }
 
 export async function addRequestType(name: string): Promise<RequestType> {
-  const type = await prisma.requestType.create({
-    data: { name: name.trim() },
-  })
-  revalidatePath("/admin/configuracoes")
-  return type as unknown as RequestType
+  await requireAdmin()
+
+  const parsed = nameSchema.safeParse(name)
+  if (!parsed.success) {
+    throw new Error("Nome do tipo inválido.")
+  }
+
+  try {
+    const type = await prisma.requestType.create({
+      data: { name: parsed.data.trim() },
+    })
+    revalidatePath("/admin/configuracoes")
+    return mapType(type)!
+  } catch (error) {
+    if (error instanceof Error && error.message.toLowerCase().includes("unique")) {
+      throw new Error("Este tipo já existe.")
+    }
+    console.error("[addRequestType]", error)
+    throw new Error("Erro ao adicionar tipo.")
+  }
 }
 
 export async function deleteRequestType(id: string) {
-  await prisma.requestType.delete({
-    where: { id },
-  })
-  revalidatePath("/admin/configuracoes")
+  await requireAdmin()
+
+  try {
+    await prisma.requestType.delete({
+      where: { id },
+    })
+    revalidatePath("/admin/configuracoes")
+  } catch (error) {
+    console.error("[deleteRequestType]", error)
+    throw new Error("Erro ao remover tipo.")
+  }
 }

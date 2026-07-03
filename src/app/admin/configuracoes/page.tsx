@@ -31,7 +31,7 @@ export default function ConfigPage() {
     let mounted = true
     fetchRequestTypes()
       .then((rows) => mounted && setTypes(rows))
-      .catch((err) => setError(err.message))
+      .catch(() => setError("Erro ao carregar tipos."))
       .finally(() => mounted && setLoading(false))
 
     const channel = supabase
@@ -60,7 +60,7 @@ export default function ConfigPage() {
       await addRequestType(name)
       setName("")
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao adicionar tipo.")
+      setError("Erro ao adicionar tipo.")
     } finally {
       setBusy(false)
     }
@@ -71,7 +71,7 @@ export default function ConfigPage() {
     try {
       await deleteRequestType(id)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao remover tipo.")
+      setError("Erro ao remover tipo.")
     }
   }
 

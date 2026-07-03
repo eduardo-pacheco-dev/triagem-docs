@@ -72,7 +72,7 @@ export default function CheckInPage() {
       })
       setEntry(created)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao entrar na fila.")
+      setError("Erro ao entrar na fila.")
     } finally {
       setLoading(false)
     }

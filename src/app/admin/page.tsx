@@ -60,7 +60,7 @@ export default function AdminQueuePage() {
     let mounted = true
     fetchActiveQueue()
       .then((rows) => mounted && setEntries(rows))
-      .catch((err) => setError(err.message))
+      .catch(() => setError("Erro ao carregar fila."))
       .finally(() => mounted && setLoading(false))
 
     const channel = supabase
@@ -85,7 +85,7 @@ export default function AdminQueuePage() {
     try {
       await updateStatus(id, status)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Falha ao atualizar.")
+      setError("Falha ao atualizar.")
     } finally {
       setPending((p) => ({ ...p, [id]: false }))
     }

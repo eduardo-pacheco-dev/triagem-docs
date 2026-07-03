@@ -55,7 +55,7 @@ export default function StatusPage() {
     setLoading(true)
     fetchBySiteId(siteId)
       .then((rows) => mounted && setEntries(rows))
-      .catch((err) => mounted && setError(err.message))
+      .catch(() => mounted && setError("Erro ao buscar status."))
       .finally(() => mounted && setLoading(false))
 
     const channel = supabase
