@@ -12,6 +12,7 @@ import {
   Tag,
   ComboBox,
   Checkbox,
+  Modal,
   Grid,
   Column,
 } from "@carbon/react"
@@ -37,6 +38,7 @@ export default function CheckInPage() {
   const [error, setError] = useState<string | null>(null)
 
   const [checkedIn, setCheckedIn] = useState(false)
+  const [showModal, setShowModal] = useState(false)
   const [searchSiteId, setSearchSiteId] = useState("")
 
   useEffect(() => {
@@ -70,7 +72,7 @@ export default function CheckInPage() {
       return
     }
     if (!checkedIn) {
-      setError("Confirme que realizou o check-in e QCP3.")
+      setShowModal(true)
       return
     }
     setLoading(true)
@@ -238,6 +240,21 @@ export default function CheckInPage() {
           </Column>
         </Grid>
       </main>
+
+      <Modal
+        open={showModal}
+        onRequestClose={() => setShowModal(false)}
+        modalHeading="Check-in obrigatório"
+        primaryButtonText="Entendi"
+        onRequestSubmit={() => setShowModal(false)}
+      >
+        <p style={{ marginBottom: "1rem" }}>
+          É necessário realizar o <strong>Check-in</strong> e o <strong>QCP3</strong> antes de solicitar a avaliação.
+        </p>
+        <p style={{ color: "#525252", fontSize: "0.875rem" }}>
+          Certifique-se de que ambos os procedimentos foram concluídos e marque a opção no formulário.
+        </p>
+      </Modal>
     </div>
-  )
+  );
 }
