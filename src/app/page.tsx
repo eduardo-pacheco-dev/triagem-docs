@@ -11,6 +11,7 @@ import {
   Tile,
   Tag,
   ComboBox,
+  Checkbox,
   Grid,
   Column,
 } from "@carbon/react"
@@ -35,6 +36,7 @@ export default function CheckInPage() {
   const [entry, setEntry] = useState<QueueEntry | null>(null)
   const [error, setError] = useState<string | null>(null)
 
+  const [checkedIn, setCheckedIn] = useState(false)
   const [searchSiteId, setSearchSiteId] = useState("")
 
   useEffect(() => {
@@ -67,6 +69,10 @@ export default function CheckInPage() {
       setError("Preencha o SITE ID, o nome do técnico e escolha um tipo de solicitação.")
       return
     }
+    if (!checkedIn) {
+      setError("Confirme que realizou o check-in e QCP3.")
+      return
+    }
     setLoading(true)
     try {
       const created = await createCheckIn({
@@ -87,6 +93,7 @@ export default function CheckInPage() {
     setSiteId("")
     setTechnicianName("")
     setRequestType(null)
+    setCheckedIn(false)
   }
 
   function handleSearch(e: React.FormEvent) {
@@ -146,6 +153,12 @@ export default function CheckInPage() {
                       onChange={({ selectedItem }) =>
                         setRequestType(selectedItem ?? null)
                       }
+                    />
+                    <Checkbox
+                      id="checkin_confirm"
+                      labelText="Realizado Check-in e QCP3"
+                      checked={checkedIn}
+                      onChange={(e, { checked }) => setCheckedIn(checked)}
                     />
                     <Button
                       type="submit"
