@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client"
+import bcrypt from "bcryptjs"
 
 const prisma = new PrismaClient()
 
@@ -17,6 +18,17 @@ async function main() {
     })
   }
   console.log("Seed completed: request types inserted")
+
+  const hash = await bcrypt.hash("admin", 10)
+  await prisma.admin.upsert({
+    where: { username: "admin" },
+    update: { passwordHash: hash },
+    create: {
+      username: "admin",
+      passwordHash: hash,
+    },
+  })
+  console.log('Admin user "admin" created with default password')
 }
 
 main()

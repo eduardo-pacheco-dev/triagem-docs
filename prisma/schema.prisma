@@ -31,3 +31,12 @@ model RequestType {
 
   @@map("request_types")
 }
+
+model Admin {
+  id           String   @id @default(uuid()) @db.Uuid
+  username     String   @unique
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("admins")
+}
