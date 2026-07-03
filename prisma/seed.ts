@@ -20,7 +20,7 @@ async function main() {
   console.log("Seed completed: request types inserted")
 
   const hash = await bcrypt.hash("admin", 10)
-  await prisma.admin.upsert({
+  await prisma.usuario.upsert({
     where: { username: "admin" },
     update: { passwordHash: hash },
     create: {
@@ -28,7 +28,7 @@ async function main() {
       passwordHash: hash,
     },
   })
-  console.log('Admin user "admin" created with default password')
+  console.log('Usuário "admin" criado com senha padrão')
 }
 
 main()

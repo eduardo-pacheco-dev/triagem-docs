@@ -17,16 +17,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (!username || !password) return null
 
-        const admin = await prisma.admin.findUnique({
+        const usuario = await prisma.usuario.findUnique({
           where: { username },
         })
 
-        if (!admin) return null
+        if (!usuario) return null
 
-        const valid = await bcrypt.compare(password, admin.passwordHash)
+        const valid = await bcrypt.compare(password, usuario.passwordHash)
         if (!valid) return null
 
-        return { id: admin.id, name: admin.username, email: `${admin.username}@admin.local` }
+        return { id: usuario.id, name: usuario.username, email: `${usuario.username}@admin.local` }
       },
     }),
   ],
