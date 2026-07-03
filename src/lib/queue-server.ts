@@ -128,6 +128,14 @@ export async function fetchActiveQueue(): Promise<QueueEntry[]> {
   return mapEntryList(entries)
 }
 
+export async function fetchArchivedQueue(): Promise<QueueEntry[]> {
+  const entries = await prisma.queueEntry.findMany({
+    where: { status: { in: ["approved", "rejected"] } },
+    orderBy: { updatedAt: "desc" },
+  })
+  return mapEntryList(entries)
+}
+
 export async function fetchBySiteId(siteId: string): Promise<QueueEntry[]> {
   const entries = await prisma.queueEntry.findMany({
     where: { siteId: siteId.trim() },
@@ -145,11 +153,13 @@ export async function updateStatus(id: string, status: string) {
   }
 
   try {
-    await prisma.queueEntry.update({
+    const entry = await prisma.queueEntry.update({
       where: { id },
       data: { status: parsedStatus.data },
     })
     revalidatePath("/admin")
+    revalidatePath("/admin/arquivados")
+    return mapEntry(entry)
   } catch (error) {
     console.error("[updateStatus]", error)
     throw new Error("Erro ao atualizar status.")

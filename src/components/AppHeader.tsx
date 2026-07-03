@@ -78,6 +78,14 @@ export function AppHeader() {
             </SideNavLink>
             <SideNavLink
               as={Link}
+              href="/admin/arquivados"
+              renderIcon={Document}
+              isActive={pathname.startsWith("/admin/arquivados")}
+            >
+              Arquivados
+            </SideNavLink>
+            <SideNavLink
+              as={Link}
               href="/admin/configuracoes"
               renderIcon={Settings}
               isActive={pathname.startsWith("/admin/configuracoes")}

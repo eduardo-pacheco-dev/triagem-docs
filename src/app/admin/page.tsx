@@ -19,7 +19,7 @@ import {
   InlineNotification,
   Loading,
 } from "@carbon/react"
-import { PlayFilledAlt, CheckmarkFilled, CloseFilled, Settings } from "@carbon/icons-react"
+import { PlayFilledAlt, CheckmarkFilled, CloseFilled, Settings, Document } from "@carbon/icons-react"
 import { supabase } from "@/lib/supabase/client"
 import { AppHeader } from "@/components/AppHeader"
 import {
@@ -106,7 +106,7 @@ export default function AdminQueuePage() {
     const activeIdx = activeQueue.findIndex((a) => a.id === e.id)
     return {
       id: e.id,
-      position: activeIdx >= 0 ? `#${activeIdx + 1}` : "—",
+      position: `#${activeIdx + 1}`,
       site_id: e.site_id,
       technician_name: e.technician_name,
       request_type: e.request_type,
@@ -151,6 +151,11 @@ export default function AdminQueuePage() {
             <Tag type="blue">Em análise: {stats.in_review}</Tag>
             <Tag type="green">Aprovados: {stats.approved}</Tag>
             <Tag type="red">Recusados: {stats.rejected}</Tag>
+            <Link href="/admin/arquivados">
+              <Button kind="ghost" size="sm" renderIcon={Document}>
+                Arquivados
+              </Button>
+            </Link>
             <Link href="/admin/configuracoes">
               <Button kind="tertiary" size="sm" renderIcon={Settings}>
                 Configurações
@@ -274,16 +279,6 @@ export default function AdminQueuePage() {
                                           Recusar
                                         </Button>
                                       </>
-                                    )}
-                                    {(entry.status === "approved" || entry.status === "rejected") && (
-                                      <Button
-                                        size="sm"
-                                        kind="ghost"
-                                        disabled={busy}
-                                        onClick={() => handleUpdate(entry.id, "waiting")}
-                                      >
-                                        Reabrir
-                                      </Button>
                                     )}
                                   </div>
                                 </TableCell>
