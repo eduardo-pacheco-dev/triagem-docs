@@ -18,13 +18,13 @@ import {
   TabPanels,
   TabPanel,
 } from "@carbon/react"
-import { Add, TrashCan, ArrowLeft, Settings, UserAvatar } from "@carbon/icons-react"
+import { Add, TrashCan, ArrowLeft, Settings, UserAvatar, Time } from "@carbon/icons-react"
 import { supabase } from "@/lib/supabase/client"
 import { AppHeader } from "@/components/AppHeader"
 import {
   type RequestType,
 } from "@/lib/queue"
-import { fetchRequestTypes, addRequestType, deleteRequestType, changePassword } from "@/lib/queue-server"
+import { fetchRequestTypes, addRequestType, deleteRequestType, changePassword, fetchSlaConfig, updateSlaConfig } from "@/lib/queue-server"
 
 function GeralTab() {
   const [types, setTypes] = useState<RequestType[]>([])
@@ -160,6 +160,87 @@ function GeralTab() {
   )
 }
 
+function SlaTab() {
+  const [waitMin, setWaitMin] = useState("60")
+  const [serviceMin, setServiceMin] = useState("120")
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
+  const [loaded, setLoaded] = useState(false)
+
+  useEffect(() => {
+    fetchSlaConfig().then((cfg) => {
+      setWaitMin(String(cfg.expectedWaitMin))
+      setServiceMin(String(cfg.expectedServiceMin))
+      setLoaded(true)
+    }).catch(() => setError("Erro ao carregar configuração SLA."))
+  }, [])
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setError(null)
+    setSuccess(false)
+    setBusy(true)
+    try {
+      await updateSlaConfig({
+        expectedWaitMin: Number(waitMin),
+        expectedServiceMin: Number(serviceMin),
+      })
+      setSuccess(true)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao salvar.")
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  if (!loaded) return <Loading withOverlay={false} />
+
+  return (
+    <div>
+      {error && (
+        <InlineNotification kind="error" lowContrast title="Erro" subtitle={error} onCloseButtonClick={() => setError(null)} />
+      )}
+      {success && (
+        <InlineNotification kind="success" lowContrast title="Configuração salva!" hideCloseButton />
+      )}
+
+      <Tile className="checkin-card" style={{ maxWidth: "100%", marginTop: 0 }}>
+        <h2 style={{ fontSize: "1.125rem", margin: "0 0 1rem", fontWeight: 500 }}>
+          Metas de SLA (minutos)
+        </h2>
+        <Form onSubmit={handleSubmit}>
+          <Stack gap={6}>
+            <TextInput
+              id="expected_wait"
+              labelText="Tempo máximo de espera (min)"
+              type="number"
+              value={waitMin}
+              onChange={(e) => setWaitMin(e.target.value)}
+              required
+              min={1}
+              max={1440}
+            />
+            <TextInput
+              id="expected_service"
+              labelText="Tempo máximo de atendimento (min)"
+              type="number"
+              value={serviceMin}
+              onChange={(e) => setServiceMin(e.target.value)}
+              required
+              min={1}
+              max={1440}
+            />
+            <Button type="submit" disabled={busy}>
+              {busy ? "Salvando..." : "Salvar"}
+            </Button>
+          </Stack>
+        </Form>
+      </Tile>
+    </div>
+  )
+}
+
 function PerfilTab() {
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
@@ -271,11 +352,15 @@ export default function ConfigPage() {
         <Tabs>
           <TabList aria-label="Configurações">
             <Tab renderIcon={Settings}>Geral</Tab>
+            <Tab renderIcon={Time}>SLA</Tab>
             <Tab renderIcon={UserAvatar}>Perfil</Tab>
           </TabList>
           <TabPanels>
             <TabPanel>
               <GeralTab />
+            </TabPanel>
+            <TabPanel>
+              <SlaTab />
             </TabPanel>
             <TabPanel>
               <PerfilTab />

@@ -256,6 +256,38 @@ export async function deleteRequestType(id: string) {
   }
 }
 
+export async function fetchSlaConfig() {
+  let config = await prisma.slaConfig.findFirst()
+  if (!config) {
+    config = await prisma.slaConfig.create({ data: {} })
+  }
+  return config
+}
+
+const slaSchema = z.object({
+  expectedWaitMin: z.coerce.number().int().min(1, "Mínimo 1 minuto").max(1440, "Máximo 1440 minutos (24h)"),
+  expectedServiceMin: z.coerce.number().int().min(1, "Mínimo 1 minuto").max(1440, "Máximo 1440 minutos (24h)"),
+})
+
+export async function updateSlaConfig(data: z.infer<typeof slaSchema>) {
+  await requireAdmin()
+  const parsed = slaSchema.safeParse(data)
+  if (!parsed.success) {
+    throw new Error(parsed.error.errors[0].message)
+  }
+
+  let config = await prisma.slaConfig.findFirst()
+  if (!config) {
+    config = await prisma.slaConfig.create({ data: parsed.data })
+  } else {
+    await prisma.slaConfig.update({
+      where: { id: config.id },
+      data: parsed.data,
+    })
+  }
+  revalidatePath("/admin/configuracoes")
+}
+
 export async function fetchDashboard() {
   await requireAdmin()
 
