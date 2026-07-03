@@ -28,6 +28,7 @@ import {
   type QueueStatus,
 } from "@/lib/queue"
 import { fetchArchivedQueue, updateStatus } from "@/lib/queue-server"
+import { slaLabel } from "@/lib/duration"
 
 const statusTagType: Record<QueueStatus, "green" | "red"> = {
   approved: "green",
@@ -91,20 +92,25 @@ export default function ArchivedPage() {
     { key: "technician_name", header: "Técnico" },
     { key: "request_type", header: "Tipo" },
     { key: "statusRaw", header: "Status" },
+    { key: "sla", header: "SLA" },
     { key: "updated_at", header: "Concluído em" },
     { key: "actions", header: "Ações" },
   ]
 
-  const rows = entries.map((e) => ({
-    id: e.id,
-    protocol: e.protocol,
-    site_id: e.site_id,
-    technician_name: e.technician_name,
-    request_type: e.request_type,
-    statusRaw: e.status,
-    updated_at: formatDate(e.updated_at),
-    _entry: e,
-  }))
+  const rows = entries.map((e) => {
+    const { wait, service, total } = slaLabel(e)
+    return {
+      id: e.id,
+      protocol: e.protocol,
+      site_id: e.site_id,
+      technician_name: e.technician_name,
+      request_type: e.request_type,
+      statusRaw: e.status,
+      sla: total || `${wait} / ${service}`,
+      updated_at: formatDate(e.updated_at),
+      _entry: e,
+    }
+  })
 
   return (
     <div className="app-shell">
@@ -186,6 +192,13 @@ export default function ArchivedPage() {
                               return (
                                 <TableCell key={cell.id}>
                                   <span className="mono">{cell.value}</span>
+                                </TableCell>
+                              )
+                            }
+                            if (cell.info.header === "sla") {
+                              return (
+                                <TableCell key={cell.id}>
+                                  <span style={{ color: "#525252", fontSize: "0.875rem" }}>{cell.value}</span>
                                 </TableCell>
                               )
                             }
