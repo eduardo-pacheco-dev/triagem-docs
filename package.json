@@ -13,9 +13,15 @@
     "db:seed": "npx prisma db seed",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:db:push": "set TEST_DATABASE_URL=file:./prisma/test.db && npx prisma db push --schema=prisma/schema.test.prisma --accept-data-loss --skip-generate",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:db:push": "npx prisma db push --schema=prisma/schema.test.prisma --accept-data-loss --skip-generate",
     "test:db:generate": "npx prisma generate --schema=prisma/schema.test.prisma",
-    "pretest": "set TEST_DATABASE_URL=file:./prisma/test.db && npx prisma db push --schema=prisma/schema.test.prisma --accept-data-loss --skip-generate"
+    "pretest": "npx prisma db push --schema=prisma/schema.test.prisma --accept-data-loss --skip-generate",
+    "dev:db:generate": "npx prisma generate --schema=prisma/schema.mysql.prisma",
+    "dev:db:push": "npx prisma db push --schema=prisma/schema.mysql.prisma --accept-data-loss",
+    "dev:db:up": "docker compose up -d",
+    "dev:db:down": "docker compose down"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
