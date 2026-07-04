@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  mysql-dev:
+    image: mysql:8.0
+    container_name: triagem-mysql-dev
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: triagem_dev
+      MYSQL_USER: dev
+      MYSQL_PASSWORD: dev
+    ports:
+      - "3306:3306"
+    tmpfs: /var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-padmin"]
+      interval: 5s
+      timeout: 5s
+      retries: 10

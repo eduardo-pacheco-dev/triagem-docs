@@ -1,0 +1,46 @@
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../node_modules/.prisma/test-client"
+  engineType      = "library"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./test.db"
+}
+
+model QueueEntry {
+  id              String    @id @default(uuid())
+  protocol        String    @unique
+  fullName        String
+  identifier      String
+  siteId          String
+  technicianName  String
+  requestType     String
+  status          String    @default("waiting")
+  positionSeq     Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  startedAt       DateTime?
+  completedAt     DateTime?
+}
+
+model RequestType {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+}
+
+model SlaConfig {
+  id                 Int      @id @default(autoincrement())
+  expectedWaitMin    Int      @default(60)
+  expectedServiceMin Int      @default(120)
+  updatedAt          DateTime @updatedAt
+}
+
+model User {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}

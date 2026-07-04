@@ -10,7 +10,18 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write .",
-    "db:seed": "npx prisma db seed"
+    "db:seed": "npx prisma db seed",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:db:push": "npx prisma db push --schema=prisma/schema.test.prisma --accept-data-loss --skip-generate",
+    "test:db:generate": "npx prisma generate --schema=prisma/schema.test.prisma",
+    "pretest": "npx prisma db push --schema=prisma/schema.test.prisma --accept-data-loss --skip-generate",
+    "dev:db:generate": "npx prisma generate --schema=prisma/schema.mysql.prisma",
+    "dev:db:push": "npx prisma db push --schema=prisma/schema.mysql.prisma --accept-data-loss",
+    "dev:db:up": "docker compose up -d",
+    "dev:db:down": "docker compose down"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
@@ -80,6 +91,7 @@
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^6.0.3",
     "eslint": "^9.32.0",
     "eslint-config-next": "16.2.10",
     "globals": "^15.15.0",
@@ -87,6 +99,7 @@
     "prisma": "^5.22.0",
     "tsx": "^4.22.5",
     "typescript": "^5.8.0",
-    "typescript-eslint": "^8.56.1"
+    "typescript-eslint": "^8.56.1",
+    "vitest": "^4.1.9"
   }
 }
