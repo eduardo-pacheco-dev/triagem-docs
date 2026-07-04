@@ -34,6 +34,33 @@ code, .mono, .cds--snippet {
   margin: 0 auto;
 }
 
+.login-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+.login-container {
+  width: 100%;
+  max-width: 28rem;
+}
+.login-card {
+  padding: 2.5rem 2rem !important;
+  margin: 0 !important;
+}
+.login-title {
+  font-size: 1.75rem;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.5rem;
+}
+.login-subtitle {
+  color: var(--cds-text-secondary, #525252);
+  margin: 0 0 2rem;
+  font-size: 0.875rem;
+}
+
 .app-shell:has(.cds--side-nav) .app-main {
   margin-left: 16rem;
 }

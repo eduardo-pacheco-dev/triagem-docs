@@ -46,47 +46,47 @@ export default function LoginPage() {
   return (
     <div className="app-shell">
       <AppHeader />
-      <main className="app-main">
-        <Tile className="checkin-card" style={{ maxWidth: 440 }}>
-          <h1 className="checkin-title" style={{ fontSize: "1.75rem" }}>
-            Acessar Painel
-          </h1>
-          <p className="checkin-subtitle">
-            Área restrita. Utilize suas credenciais para continuar.
-          </p>
-          <Form onSubmit={handleSubmit}>
-            <Stack gap={6}>
-              {error && (
-                <InlineNotification
-                  kind="error"
-                  lowContrast
-                  title="Falha no login"
-                  subtitle={error}
-                  hideCloseButton
+      <main className="login-main">
+        <div className="login-container">
+          <Tile className="login-card">
+            <h1 className="login-title">Acessar Painel</h1>
+            <p className="login-subtitle">
+              Área restrita. Utilize suas credenciais para continuar.
+            </p>
+            <Form onSubmit={handleSubmit}>
+              <Stack gap={6}>
+                {error && (
+                  <InlineNotification
+                    kind="error"
+                    lowContrast
+                    title="Falha no login"
+                    subtitle={error}
+                    hideCloseButton
+                  />
+                )}
+                <TextInput
+                  id="username"
+                  labelText="Usuário"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                  autoComplete="username"
                 />
-              )}
-              <TextInput
-                id="username"
-                labelText="Usuário"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-                autoComplete="username"
-              />
-              <PasswordInput
-                id="password"
-                labelText="Senha"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoComplete="current-password"
-              />
-              <Button type="submit" renderIcon={LoginIcon} size="lg" disabled={loading}>
-                {loading ? "Entrando..." : "Entrar"}
-              </Button>
-            </Stack>
-          </Form>
-        </Tile>
+                <PasswordInput
+                  id="password"
+                  labelText="Senha"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  autoComplete="current-password"
+                />
+                <Button type="submit" renderIcon={LoginIcon} size="lg" disabled={loading}>
+                  {loading ? "Entrando..." : "Entrar"}
+                </Button>
+              </Stack>
+            </Form>
+          </Tile>
+        </div>
       </main>
     </div>
   )

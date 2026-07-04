@@ -43,7 +43,7 @@ export function AppHeader() {
             >
               <Logout />
             </HeaderGlobalAction>
-          ) : (
+          ) : pathname !== "/login" && (
             <HeaderGlobalAction
               aria-label="Entrar"
               tooltipAlignment="end"
