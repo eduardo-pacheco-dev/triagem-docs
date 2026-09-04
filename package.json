@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "concurrently -n mock,next -c blue,green \"npm:mock\" \"next dev --turbopack\"",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
@@ -75,6 +75,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^6.0.3",
+    "concurrently": "^9.2.4",
     "eslint": "^9.32.0",
     "eslint-config-next": "16.2.10",
     "globals": "^15.15.0",
