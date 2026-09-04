@@ -14,14 +14,13 @@ import {
   Stack,
 } from "@carbon/react"
 import { ArrowLeft } from "@carbon/icons-react"
-import { supabase } from "@/lib/supabase/client"
 import { AppHeader } from "@/components/AppHeader"
 import {
   statusLabel,
   type QueueEntry,
   type QueueStatus,
 } from "@/lib/queue"
-import { fetchBySiteId } from "@/lib/queue-server"
+import { fetchBySiteId } from "@/lib/api"
 import { slaLabel } from "@/lib/duration"
 
 
@@ -54,45 +53,23 @@ export default function StatusPage() {
 
   useEffect(() => {
     let mounted = true
-    setLoading(true)
-    fetchBySiteId(siteId)
-      .then((result) => {
-        if (mounted) {
-          setEntries(result.entries)
-          setPosition(result.position)
-        }
-      })
-      .catch(() => mounted && setError("Erro ao buscar status."))
-      .finally(() => mounted && setLoading(false))
-
-    const channel = supabase
-      .channel(`status_${siteId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "queue_entries",
-          filter: `site_id=eq.${siteId}`,
-        },
-        () => {
-          fetchBySiteId(siteId).then((result) => {
-            if (mounted) {
-              setEntries(result.entries)
-              setPosition(result.position)
-            }
-          })
-        },
-      )
-      .subscribe((status) => {
-        if (status === "CHANNEL_ERROR") {
-          console.warn("[Realtime] queue_entries channel error")
-        }
-      })
-
+    function load() {
+      setLoading(true)
+      fetchBySiteId(siteId)
+        .then((result) => {
+          if (mounted) {
+            setEntries(result.entries)
+            setPosition(result.position)
+          }
+        })
+        .catch(() => mounted && setError("Erro ao buscar status."))
+        .finally(() => mounted && setLoading(false))
+    }
+    load()
+    const timer = setInterval(load, 4000)
     return () => {
       mounted = false
-      supabase.removeChannel(channel)
+      clearInterval(timer)
     }
   }, [siteId])
 

@@ -13,7 +13,7 @@ import {
 } from "@carbon/react"
 import { ArrowLeft } from "@carbon/icons-react"
 import { AppHeader } from "@/components/AppHeader"
-import { fetchDashboard } from "@/lib/queue-server"
+import { fetchDashboard } from "@/lib/api"
 import { slaLabel, formatDuration } from "@/lib/duration"
 
 interface DashboardData {

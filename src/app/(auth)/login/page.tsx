@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { signIn } from "next-auth/react"
+import { login } from "@/lib/session"
 import {
   Form,
   Stack,
@@ -27,15 +27,11 @@ export default function LoginPage() {
     setError(null)
     setLoading(true)
 
-    const result = await signIn("credentials", {
-      username,
-      password,
-      redirect: false,
-    })
+    const ok = await login(username, password)
 
     setLoading(false)
 
-    if (result?.ok) {
+    if (ok) {
       router.push("/admin")
       router.refresh()
     } else {

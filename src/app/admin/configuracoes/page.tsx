@@ -19,12 +19,12 @@ import {
   TabPanel,
 } from "@carbon/react"
 import { Add, TrashCan, ArrowLeft, Settings, UserAvatar, Time } from "@carbon/icons-react"
-import { supabase } from "@/lib/supabase/client"
 import { AppHeader } from "@/components/AppHeader"
 import {
   type RequestType,
 } from "@/lib/queue"
-import { fetchRequestTypes, addRequestType, deleteRequestType, changePassword, fetchSlaConfig, updateSlaConfig } from "@/lib/queue-server"
+import { fetchRequestTypes, addRequestType, deleteRequestType, changePassword, fetchSlaConfig, updateSlaConfig } from "@/lib/api"
+import { getCurrentUsername } from "@/lib/session"
 
 function GeralTab() {
   const [types, setTypes] = useState<RequestType[]>([])
@@ -35,29 +35,17 @@ function GeralTab() {
 
   useEffect(() => {
     let mounted = true
-    fetchRequestTypes()
-      .then((rows) => mounted && setTypes(rows))
-      .catch(() => setError("Erro ao carregar tipos."))
-      .finally(() => mounted && setLoading(false))
-
-    const channel = supabase
-      .channel("request_types_admin")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "request_types" },
-        () => {
-          fetchRequestTypes().then((rows) => mounted && setTypes(rows))
-        },
-      )
-      .subscribe((status) => {
-        if (status === "CHANNEL_ERROR") {
-          console.warn("[Realtime] request_types channel error")
-        }
-      })
-
+    function load() {
+      fetchRequestTypes()
+        .then((rows) => mounted && setTypes(rows))
+        .catch(() => setError("Erro ao carregar tipos."))
+        .finally(() => mounted && setLoading(false))
+    }
+    load()
+    const timer = setInterval(load, 4000)
     return () => {
       mounted = false
-      supabase.removeChannel(channel)
+      clearInterval(timer)
     }
   }, [])
 
@@ -261,7 +249,7 @@ function PerfilTab() {
 
     setBusy(true)
     try {
-      await changePassword({ currentPassword, newPassword })
+      await changePassword(getCurrentUsername() ?? "", { currentPassword, newPassword })
       setSuccess(true)
       setCurrentPassword("")
       setNewPassword("")

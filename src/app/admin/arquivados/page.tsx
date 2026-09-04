@@ -20,14 +20,13 @@ import {
   Loading,
 } from "@carbon/react"
 import { Restart, ArrowLeft } from "@carbon/icons-react"
-import { supabase } from "@/lib/supabase/client"
 import { AppHeader } from "@/components/AppHeader"
 import {
   statusLabel,
   type QueueEntry,
   type QueueStatus,
 } from "@/lib/queue"
-import { fetchArchivedQueue, updateStatus } from "@/lib/queue-server"
+import { fetchArchivedQueue, updateStatus } from "@/lib/api"
 import { slaLabel } from "@/lib/duration"
 
 const statusTagType: Record<QueueStatus, "green" | "red"> = {
@@ -47,29 +46,17 @@ export default function ArchivedPage() {
 
   useEffect(() => {
     let mounted = true
-    fetchArchivedQueue()
-      .then((rows) => mounted && setEntries(rows))
-      .catch(() => setError("Erro ao carregar arquivados."))
-      .finally(() => mounted && setLoading(false))
-
-    const channel = supabase
-      .channel("queue_entries_archived")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "queue_entries" },
-        () => {
-          fetchArchivedQueue().then((rows) => mounted && setEntries(rows))
-        },
-      )
-      .subscribe((status) => {
-        if (status === "CHANNEL_ERROR") {
-          console.warn("[Realtime] archived channel error")
-        }
-      })
-
+    function load() {
+      fetchArchivedQueue()
+        .then((rows) => mounted && setEntries(rows))
+        .catch(() => setError("Erro ao carregar arquivados."))
+        .finally(() => mounted && setLoading(false))
+    }
+    load()
+    const timer = setInterval(load, 4000)
     return () => {
       mounted = false
-      supabase.removeChannel(channel)
+      clearInterval(timer)
     }
   }, [])
 

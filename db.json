@@ -1,0 +1,112 @@
+{
+  "queue_entries": [
+    {
+      "id": "9f2b1c88-0b1a-4a1e-9a5e-1b3c2d4e5f60",
+      "protocol": "DOC-1001",
+      "full_name": "Maria Silva",
+      "identifier": "SITE-0421",
+      "site_id": "SITE-0421",
+      "technician_name": "Maria Silva",
+      "request_type": "Auditoria",
+      "status": "waiting",
+      "position_seq": 1,
+      "created_at": "2026-09-04T09:12:00.000Z",
+      "updated_at": "2026-09-04T09:12:00.000Z",
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "id": "a39d4e77-2c5b-4a2f-b6d1-4c9d8e7f6a51",
+      "protocol": "DOC-1002",
+      "full_name": "João Oliveira",
+      "identifier": "SITE-0158",
+      "site_id": "SITE-0158",
+      "technician_name": "João Oliveira",
+      "request_type": "Instalação",
+      "status": "waiting",
+      "position_seq": 2,
+      "created_at": "2026-09-04T09:20:00.000Z",
+      "updated_at": "2026-09-04T09:20:00.000Z",
+      "started_at": null,
+      "completed_at": null
+    },
+    {
+      "id": "c5b8f1a0-3d6c-4b3a-9c7e-2f8a9b0c1d62",
+      "protocol": "DOC-1003",
+      "full_name": "Ana Pereira",
+      "identifier": "SITE-0022",
+      "site_id": "SITE-0022",
+      "technician_name": "Ana Pereira",
+      "request_type": "Manutenção Preventiva",
+      "status": "in_review",
+      "position_seq": 3,
+      "created_at": "2026-09-04T08:45:00.000Z",
+      "updated_at": "2026-09-04T09:05:00.000Z",
+      "started_at": "2026-09-04T09:05:00.000Z",
+      "completed_at": null
+    },
+    {
+      "id": "d76a9201-4e7d-4c4b-8d8f-3a9b0c1d2e73",
+      "protocol": "DOC-1004",
+      "full_name": "Carlos Souza",
+      "identifier": "SITE-0765",
+      "site_id": "SITE-0765",
+      "technician_name": "Carlos Souza",
+      "request_type": "Auditoria",
+      "status": "approved",
+      "position_seq": 4,
+      "created_at": "2026-09-04T07:30:00.000Z",
+      "updated_at": "2026-09-04T08:15:00.000Z",
+      "started_at": "2026-09-04T07:45:00.000Z",
+      "completed_at": "2026-09-04T08:15:00.000Z"
+    },
+    {
+      "id": "e8b1a312-5f8e-4d5c-9e9a-5c0d1e2f3g84",
+      "protocol": "DOC-1005",
+      "full_name": "Fernanda Costa",
+      "identifier": "SITE-0103",
+      "site_id": "SITE-0103",
+      "technician_name": "Fernanda Costa",
+      "request_type": "Instalação",
+      "status": "rejected",
+      "position_seq": 5,
+      "created_at": "2026-09-03T16:20:00.000Z",
+      "updated_at": "2026-09-03T17:00:00.000Z",
+      "started_at": "2026-09-03T16:35:00.000Z",
+      "completed_at": "2026-09-03T17:00:00.000Z"
+    }
+  ],
+  "request_types": [
+    {
+      "id": "7d0e9f2a-4b5c-4d6e-8f0a-1b2c3d4e5f60",
+      "name": "Auditoria",
+      "created_at": "2026-08-01T10:00:00.000Z"
+    },
+    {
+      "id": "8e1f0a3b-5c6d-4e7f-9a1b-2c3d4e5f6071",
+      "name": "Instalação",
+      "created_at": "2026-08-01T10:00:00.000Z"
+    },
+    {
+      "id": "9f2a1b4c-6d7e-4f8a-ab2c-3d4e5f607182",
+      "name": "Manutenção Preventiva",
+      "created_at": "2026-08-01T10:00:00.000Z"
+    }
+  ],
+  "sla_config": [
+    {
+      "id": "a1b2c3d4-5e6f-4a7b-8c9d-0e1f2a3b4c50",
+      "expected_wait_min": 60,
+      "expected_service_min": 120,
+      "updated_at": "2026-08-01T10:00:00.000Z"
+    }
+  ],
+  "users": [
+    {
+      "id": "b2c3d4e5-6f7a-4b8c-9d0e-1f2a3b4c5d61",
+      "username": "admin",
+      "password_hash": "$2b$10$EMYjlptMr5MfV/J8ODDKTe2BOmtgyqsgwOV.xTkZ3v/DL/bgvLlNa",
+      "created_at": "2026-08-01T10:00:00.000Z"
+    }
+  ]
+}

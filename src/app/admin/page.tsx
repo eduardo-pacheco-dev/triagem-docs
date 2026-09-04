@@ -20,14 +20,13 @@ import {
   Loading,
 } from "@carbon/react"
 import { PlayFilledAlt, CheckmarkFilled, CloseFilled, Settings, Document } from "@carbon/icons-react"
-import { supabase } from "@/lib/supabase/client"
 import { AppHeader } from "@/components/AppHeader"
 import {
   statusLabel,
   type QueueEntry,
   type QueueStatus,
 } from "@/lib/queue"
-import { fetchActiveQueue, updateStatus } from "@/lib/queue-server"
+import { fetchActiveQueue, updateStatus } from "@/lib/api"
 import { slaLabel } from "@/lib/duration"
 
 const statusClass: Record<QueueStatus, string> = {
@@ -59,29 +58,17 @@ export default function AdminQueuePage() {
 
   useEffect(() => {
     let mounted = true
-    fetchActiveQueue()
-      .then((rows) => mounted && setEntries(rows))
-      .catch(() => setError("Erro ao carregar fila."))
-      .finally(() => mounted && setLoading(false))
-
-    const channel = supabase
-      .channel("queue_entries_admin")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "queue_entries" },
-        () => {
-          fetchActiveQueue().then((rows) => mounted && setEntries(rows))
-        },
-      )
-      .subscribe((status) => {
-        if (status === "CHANNEL_ERROR") {
-          console.warn("[Realtime] queue_entries channel error")
-        }
-      })
-
+    function load() {
+      fetchActiveQueue()
+        .then((rows) => mounted && setEntries(rows))
+        .catch(() => setError("Erro ao carregar fila."))
+        .finally(() => mounted && setLoading(false))
+    }
+    load()
+    const timer = setInterval(load, 4000)
     return () => {
       mounted = false
-      supabase.removeChannel(channel)
+      clearInterval(timer)
     }
   }, [])
 

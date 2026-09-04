@@ -17,14 +17,13 @@ import {
   Column,
 } from "@carbon/react"
 import { ArrowRight, Restart, Search } from "@carbon/icons-react"
-import { supabase } from "@/lib/supabase/client"
 import { AppHeader } from "@/components/AppHeader"
 import {
   statusLabel,
   type QueueEntry,
   type RequestType,
 } from "@/lib/queue"
-import { createCheckIn, fetchRequestTypes } from "@/lib/queue-server"
+import { createCheckIn, fetchRequestTypes } from "@/lib/api"
 
 export default function CheckInPage() {
   const router = useRouter()
@@ -43,24 +42,16 @@ export default function CheckInPage() {
 
   useEffect(() => {
     let mounted = true
-    fetchRequestTypes().then((rows) => mounted && setTypes(rows)).catch(() => {})
-    const channel = supabase
-      .channel("request_types_public")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "request_types" },
-        () => {
-          fetchRequestTypes().then((rows) => mounted && setTypes(rows))
-        },
-      )
-      .subscribe((status) => {
-        if (status === "CHANNEL_ERROR") {
-          console.warn("[Realtime] request_types channel error")
-        }
-      })
+    function load() {
+      fetchRequestTypes()
+        .then((rows) => mounted && setTypes(rows))
+        .catch(() => {})
+    }
+    load()
+    const timer = setInterval(load, 4000)
     return () => {
       mounted = false
-      supabase.removeChannel(channel)
+      clearInterval(timer)
     }
   }, [])
 

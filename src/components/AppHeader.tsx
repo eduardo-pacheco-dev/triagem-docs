@@ -3,7 +3,8 @@
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 
-import { useSession, signOut } from "next-auth/react"
+import { useEffect, useState } from "react"
+import { isAuthenticated, logout } from "@/lib/session"
 import {
   Header,
   HeaderName,
@@ -25,8 +26,18 @@ import {
 export function AppHeader() {
   const pathname = usePathname()
   const router = useRouter()
-  const { data: session } = useSession()
-  const authed = !!session
+  const [authed, setAuthed] = useState(false)
+
+  useEffect(() => {
+    setAuthed(isAuthenticated())
+  }, [pathname])
+
+  function handleLogout() {
+    logout()
+    setAuthed(false)
+    router.push("/login")
+    router.refresh()
+  }
 
   return (
     <>
@@ -38,7 +49,7 @@ export function AppHeader() {
           {authed ? (
             <HeaderGlobalAction
               aria-label="Sair"
-              onClick={() => signOut({ callbackUrl: "/login" })}
+              onClick={handleLogout}
               tooltipAlignment="end"
             >
               <Logout />

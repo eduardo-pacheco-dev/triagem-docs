@@ -7,7 +7,7 @@ const csp = [
   "img-src 'self' data: blob: https:",
   "font-src 'self' https://fonts.gstatic.com",
   "frame-src https://challenges.cloudflare.com",
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.supabase.com",
+  "connect-src 'self' http://localhost:3001",
   "base-uri 'self'",
   "form-action 'self'",
 ].join("; ");
