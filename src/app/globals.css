@@ -75,7 +75,12 @@ code, .mono, .cds--snippet {
 .protocol-code { font-family: "IBM Plex Mono", monospace; font-size: clamp(1.25rem, 4vw, 1.5rem); font-weight: 500; color: var(--ibm-blue); letter-spacing: 0.02em; }
 .field-label { font-size: 0.75rem; color: #525252; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; }
 .detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 1.25rem; }
+.detail-grid > div { min-width: 0; }
 .history-row { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; padding: 0.5rem 0; border-bottom: 1px solid #e0e0e0; }
+.mono { overflow-wrap: anywhere; }
+.status-site-id { overflow-wrap: anywhere; }
+.progress-scroll { overflow-x: auto; padding: 0.25rem 0 0.5rem; }
+.progress-scroll .cds--progress { min-width: 28rem; }
 
 .card-list {
   display: flex;

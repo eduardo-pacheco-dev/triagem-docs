@@ -87,7 +87,7 @@ export default function StatusPage() {
 
         <Tile className="checkin-card" style={{ maxWidth: "100%" }}>
           <div className="field-label">SITE ID</div>
-          <h1 className="checkin-title mono" style={{ fontSize: "1.75rem" }}>
+          <h1 className="checkin-title status-site-id">
             {siteId}
           </h1>
 
@@ -152,24 +152,26 @@ export default function StatusPage() {
                 )
               })()}
 
-              <ProgressIndicator
-                currentIndex={currentStep(latest.status)}
-                spaceEqually
-              >
-                <ProgressStep label="Na Fila" description="Aguardando análise" />
-                <ProgressStep label="Em Análise" description="Sendo revisado" />
-                <ProgressStep
-                  label={
-                    latest.status === "rejected" ? "Recusado" : "Concluído"
-                  }
-                  description={
-                    latest.status === "rejected"
-                      ? "Solicitação recusada"
-                      : "Análise finalizada"
-                  }
-                  invalid={latest.status === "rejected"}
-                />
-              </ProgressIndicator>
+              <div className="progress-scroll">
+                <ProgressIndicator
+                  currentIndex={currentStep(latest.status)}
+                  spaceEqually
+                >
+                  <ProgressStep label="Na Fila" description="Aguardando análise" />
+                  <ProgressStep label="Em Análise" description="Sendo revisado" />
+                  <ProgressStep
+                    label={
+                      latest.status === "rejected" ? "Recusado" : "Concluído"
+                    }
+                    description={
+                      latest.status === "rejected"
+                        ? "Solicitação recusada"
+                        : "Análise finalizada"
+                    }
+                    invalid={latest.status === "rejected"}
+                  />
+                </ProgressIndicator>
+              </div>
 
               <div className="detail-grid">
                 <div>
