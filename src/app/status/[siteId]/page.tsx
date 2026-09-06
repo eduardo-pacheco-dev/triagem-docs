@@ -14,7 +14,6 @@ import {
   Stack,
 } from "@carbon/react"
 import { ArrowLeft } from "@carbon/icons-react"
-import { AppHeader } from "@/components/AppHeader"
 import {
   statusLabel,
   type QueueEntry,
@@ -77,7 +76,6 @@ export default function StatusPage() {
 
   return (
     <div className="app-shell">
-      <AppHeader />
       <main className="app-main" style={{ maxWidth: 900 }}>
         <div style={{ marginBottom: "1rem" }}>
           <Link href="/">

@@ -1,8 +1,7 @@
 # AFL Engenharia — Triagem Docs
 
 Plataforma de check-in e fila de espera para análise de documentos. O técnico
-registra uma solicitação por **SITE ID** e acompanha a posição na fila; a equipe
-administrativa gerencia a fila, o SLA e o cadastro de tipos de solicitação.
+registra uma solicitação por **SITE ID** e acompanha a posição na fila.
 
 ## Stack
 
@@ -11,7 +10,6 @@ administrativa gerencia a fila, o SLA e o cadastro de tipos de solicitação.
 - **IBM Carbon Design System** (`@carbon/react` + `@carbon/styles` e `@carbon/icons-react`)
 - **Tailwind CSS 4** + `cva`/`tailwind-merge` (utilitários)
 - **Mock backend**: `json-server` (arquivo `db.json`, porta `3001`)
-- **Autenticação**: cookie `admin_session`, senha com hash `bcrypt`
 - **Testes**: Vitest
 - **Lint**: ESLint (flat config) · **Format**: Prettier
 
@@ -48,34 +46,12 @@ Acesso: http://localhost:3000
 > Opcional: copie `.env.example` para `.env.local`. O padrão de
 > `NEXT_PUBLIC_API_URL` já é `http://localhost:3001`.
 
-## Credenciais de desenvolvimento
-
-| Campo    | Valor       |
-| -------- | ----------- |
-| Usuário  | `admin`     |
-| Senha    | `admin123`  |
-
-O usuário padrão é definido na coleção `users` em `db.json` (hash `bcrypt`).
-Para registrar um novo hash, rode:
-
-```bash
-node -e "const b=require('bcryptjs'); b.hash('SUA_SENHA',10).then(console.log)"
-```
-
 ## Rotas
 
 | Rota                     | Acesso  | Descrição                                        |
 | ------------------------ | ------- | ------------------------------------------------ |
 | `/`                      | Público | Check-in: nova solicitação + busca por SITE ID    |
 | `/status/[siteId]`       | Público | Acompanhamento de status e posição na fila        |
-| `/login`                 | Público | Login do painel administrativo                    |
-| `/admin`                 | Restrito | Fila de análise (FIFO) com Ações (chamar/concluir/recusar) |
-| `/admin/dashboard`       | Restrito | KPIs: total, status, tempo médio de espera/serviço |
-| `/admin/arquivados`      | Restrito | Solicitações concluídas/recusadas                 |
-| `/admin/configuracoes`   | Restrito | Tipos de solicitação, SLA e troca de senha        |
-
-As rotas `/admin/*` são protegidas por `src/proxy.ts` (redireciona para `/login`
-sem cookie `admin_session`).
 
 ## Fluxo de status
 
@@ -88,8 +64,6 @@ Coleções:
 
 - `queue_entries` — solicitações na fila (com `position_seq`, `started_at`, `completed_at`)
 - `request_types` — catálogo de tipos de solicitação (ex.: Auditoria, Instalação)
-- `sla_config` — `expected_wait_min` e `expected_service_min`
-- `users` — usuários do painel (username + `password_hash`)
 
 Ao reiniciar o `npm run mock`, o arquivo é persistido (o `json-server`
 reescreve o `db.json` a cada alteração).
@@ -121,17 +95,12 @@ Os testes ficam em `src/lib/__tests__/` (Vitest). A configuração fica em
 ```
 src/
   app/                  # Rotas do App Router
-    (auth)/login/       # Login
-    admin/              # Painel (fila, dashboard, arquivados, configurações)
     status/[siteId]/    # Acompanhamento público
-  components/           # AppHeader, nav etc.
   lib/
     api.ts              # Cliente da API mock (json-server) + lógica de negócio
-    session.ts          # Login/logout via cookie + bcrypt
     queue.ts            # Tipos e rótulos de status
     duration.ts         # Cálculo de SLA (espera/serviço/total)
     utils.ts            # Utilitários (cn etc.)
-  proxy.ts              # Middleware de proteção do /admin
 db.json                 # Backend mock (json-server)
 supabase/migrations/    # Migrações Supabase (histórico/futuro)
 ```

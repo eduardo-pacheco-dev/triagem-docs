@@ -13,11 +13,8 @@ import {
   ComboBox,
   Checkbox,
   Modal,
-  Grid,
-  Column,
 } from "@carbon/react"
 import { ArrowRight, Restart, Search } from "@carbon/icons-react"
-import { AppHeader } from "@/components/AppHeader"
 import {
   statusLabel,
   type QueueEntry,
@@ -97,139 +94,143 @@ export default function CheckInPage() {
 
   return (
     <div className="app-shell">
-      <AppHeader />
       <main className="app-main">
-        <Grid narrow>
-          <Column sm={4} md={8} lg={8}>
-            <Tile className="checkin-card">
-              <h1 className="checkin-title">Solicitar Avaliação</h1>
-              <p className="checkin-subtitle">
-                Preencha os dados abaixo para entrar na fila de análise. Um número de
-                protocolo será gerado.
-              </p>
+        <section className="hero">
+          <span className="hero-eyebrow">AFL Engenharia</span>
+          <h1 className="hero-title">Triagem Docs</h1>
+          <p className="hero-subtitle">
+            Realize o check-in e entre na fila de análise de documentos.
+            Acompanhe sua posição a qualquer momento pelo SITE ID.
+          </p>
+        </section>
 
-              {!entry ? (
-                <Form onSubmit={handleSubmit}>
-                  <Stack gap={6}>
-                    {error && (
-                      <InlineNotification
-                        kind="error"
-                        lowContrast
-                        title="Não foi possível prosseguir"
-                        subtitle={error}
-                        hideCloseButton
-                      />
-                    )}
-                    <TextInput
-                      id="site_id"
-                      labelText="SITE ID"
-                      placeholder="Ex.: SITE-0421"
-                      value={siteId}
-                      onChange={(e) => setSiteId(e.target.value)}
-                      required
-                    />
-                    <TextInput
-                      id="technician_name"
-                      labelText="Nome do Técnico"
-                      placeholder="Ex.: Maria Silva"
-                      value={technicianName}
-                      onChange={(e) => setTechnicianName(e.target.value)}
-                      required
-                    />
-                    <ComboBox
-                      id="request_type"
-                      titleText="Tipo de Solicitação"
-                      placeholder="Selecione um tipo"
-                      items={types}
-                      itemToString={(item: RequestType | null) => (item ? item.name : "")}
-                      selectedItem={requestType}
-                      onChange={({ selectedItem }) =>
-                        setRequestType(selectedItem ?? null)
-                      }
-                    />
-                    <Checkbox
-                      id="checkin_confirm"
-                      labelText="Realizado Check-in e QCP3"
-                      checked={checkedIn}
-                      onChange={(e, { checked }) => setCheckedIn(checked)}
-                    />
-                    <Button
-                      type="submit"
-                      disabled={loading}
-                      renderIcon={ArrowRight}
-                      size="lg"
-                    >
-                      {loading ? "Registrando..." : "Solicitar Avaliação"}
-                    </Button>
-                  </Stack>
-                </Form>
-              ) : (
-                <Stack gap={6}>
-                  <InlineNotification
-                    kind="success"
-                    lowContrast
-                    title="Solicitação registrada com sucesso!"
-                    subtitle="Guarde seu número de protocolo e SITE ID para acompanhamento."
-                    hideCloseButton
-                  />
-                  <div>
-                    <div className="field-label">Protocolo</div>
-                    <div className="protocol-code">#{entry.protocol}</div>
-                  </div>
-                  <div>
-                    <div className="field-label">SITE ID</div>
-                    <div className="mono" style={{ fontSize: "1rem" }}>
-                      {entry.site_id}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="field-label">Status atual</div>
-                    <Tag type="blue" size="md">
-                      {statusLabel[entry.status]}
-                    </Tag>
-                  </div>
-                  <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-                    <Button
-                      renderIcon={Search}
-                      onClick={() => router.push(`/status/${entry.site_id}`)}
-                    >
-                      Ver acompanhamento
-                    </Button>
-                    <Button kind="tertiary" renderIcon={Restart} onClick={reset}>
-                      Nova solicitação
-                    </Button>
-                  </div>
-                </Stack>
-              )}
-            </Tile>
-          </Column>
+        <div className="card-list">
+          <Tile className="checkin-card">
+            <h1 className="checkin-title">Solicitar Avaliação</h1>
+            <p className="checkin-subtitle">
+              Preencha os dados abaixo para entrar na fila de análise. Um número de
+              protocolo será gerado.
+            </p>
 
-          <Column sm={4} md={8} lg={8}>
-            <Tile className="checkin-card">
-              <h2 className="checkin-title" style={{ fontSize: "1.5rem" }}>
-                Acompanhar Status
-              </h2>
-              <p className="checkin-subtitle">
-                Já solicitou uma avaliação? Consulte o andamento pelo SITE ID.
-              </p>
-              <Form onSubmit={handleSearch}>
+            {!entry ? (
+              <Form onSubmit={handleSubmit}>
                 <Stack gap={6}>
+                  {error && (
+                    <InlineNotification
+                      kind="error"
+                      lowContrast
+                      title="Não foi possível prosseguir"
+                      subtitle={error}
+                      hideCloseButton
+                    />
+                  )}
                   <TextInput
-                    id="search_site_id"
+                    id="site_id"
                     labelText="SITE ID"
                     placeholder="Ex.: SITE-0421"
-                    value={searchSiteId}
-                    onChange={(e) => setSearchSiteId(e.target.value)}
+                    value={siteId}
+                    onChange={(e) => setSiteId(e.target.value)}
                     required
                   />
-                  <Button type="submit" kind="secondary" renderIcon={Search} size="lg">
-                    Buscar Status
+                  <TextInput
+                    id="technician_name"
+                    labelText="Nome do Técnico"
+                    placeholder="Ex.: Maria Silva"
+                    value={technicianName}
+                    onChange={(e) => setTechnicianName(e.target.value)}
+                    required
+                  />
+                  <ComboBox
+                    id="request_type"
+                    titleText="Tipo de Solicitação"
+                    placeholder="Selecione um tipo"
+                    items={types}
+                    itemToString={(item: RequestType | null) => (item ? item.name : "")}
+                    selectedItem={requestType}
+                    onChange={({ selectedItem }) =>
+                      setRequestType(selectedItem ?? null)
+                    }
+                  />
+                  <Checkbox
+                    id="checkin_confirm"
+                    labelText="Realizado Check-in e QCP3"
+                    checked={checkedIn}
+                    onChange={(e, { checked }) => setCheckedIn(checked)}
+                  />
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                    renderIcon={ArrowRight}
+                    size="lg"
+                  >
+                    {loading ? "Registrando..." : "Solicitar Avaliação"}
                   </Button>
                 </Stack>
               </Form>
-            </Tile>
-          </Column>
-        </Grid>
+            ) : (
+              <Stack gap={6}>
+                <InlineNotification
+                  kind="success"
+                  lowContrast
+                  title="Solicitação registrada com sucesso!"
+                  subtitle="Guarde seu número de protocolo e SITE ID para acompanhamento."
+                  hideCloseButton
+                />
+                <div>
+                  <div className="field-label">Protocolo</div>
+                  <div className="protocol-code">#{entry.protocol}</div>
+                </div>
+                <div>
+                  <div className="field-label">SITE ID</div>
+                  <div className="mono" style={{ fontSize: "1rem" }}>
+                    {entry.site_id}
+                  </div>
+                </div>
+                <div>
+                  <div className="field-label">Status atual</div>
+                  <Tag type="blue" size="md">
+                    {statusLabel[entry.status]}
+                  </Tag>
+                </div>
+                <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+                  <Button
+                    renderIcon={Search}
+                    onClick={() => router.push(`/status/${entry.site_id}`)}
+                  >
+                    Ver acompanhamento
+                  </Button>
+                  <Button kind="tertiary" renderIcon={Restart} onClick={reset}>
+                    Nova solicitação
+                  </Button>
+                </div>
+              </Stack>
+            )}
+          </Tile>
+
+          <Tile className="checkin-card">
+            <h2 className="checkin-title">
+              Acompanhar Status
+            </h2>
+            <p className="checkin-subtitle">
+              Já solicitou uma avaliação? Consulte o andamento pelo SITE ID.
+            </p>
+            <Form onSubmit={handleSearch}>
+              <Stack gap={6}>
+                <TextInput
+                  id="search_site_id"
+                  labelText="SITE ID"
+                  placeholder="Ex.: SITE-0421"
+                  value={searchSiteId}
+                  onChange={(e) => setSearchSiteId(e.target.value)}
+                  required
+                />
+                <Button type="submit" kind="secondary" renderIcon={Search} size="lg">
+                  Buscar Status
+                </Button>
+              </Stack>
+            </Form>
+          </Tile>
+        </div>
       </main>
 
       <Modal
