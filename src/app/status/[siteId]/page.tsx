@@ -21,6 +21,7 @@ import {
 } from "@/lib/queue"
 import { fetchBySiteId } from "@/lib/api"
 import { slaLabel } from "@/lib/duration"
+import AppFooter from "@/components/AppFooter"
 
 
 const tagType: Record<QueueStatus, "gray" | "blue" | "green" | "red"> = {
@@ -219,6 +220,8 @@ export default function StatusPage() {
           </Tile>
         )}
       </main>
+
+      <AppFooter />
     </div>
   )
 }

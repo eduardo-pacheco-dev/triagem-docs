@@ -14,13 +14,14 @@ import {
   Checkbox,
   Modal,
 } from "@carbon/react"
-import { ArrowRight, Restart, Search } from "@carbon/icons-react"
+import { ArrowRight, Restart, Search, DocumentAdd, TaskView } from "@carbon/icons-react"
 import {
   statusLabel,
   type QueueEntry,
   type RequestType,
 } from "@/lib/queue"
 import { createCheckIn, fetchRequestTypes } from "@/lib/api"
+import AppFooter from "@/components/AppFooter"
 
 export default function CheckInPage() {
   const router = useRouter()
@@ -106,7 +107,12 @@ export default function CheckInPage() {
 
         <div className="card-list">
           <Tile className="checkin-card">
-            <h1 className="checkin-title">Solicitar Avaliação</h1>
+            <div className="card-heading">
+              <span className="card-heading-icon" aria-hidden="true">
+                <DocumentAdd size={24} />
+              </span>
+              <h1 className="checkin-title">Solicitar Avaliação</h1>
+            </div>
             <p className="checkin-subtitle">
               Preencha os dados abaixo para entrar na fila de análise. Um número de
               protocolo será gerado.
@@ -208,9 +214,14 @@ export default function CheckInPage() {
           </Tile>
 
           <Tile className="checkin-card">
-            <h2 className="checkin-title">
-              Acompanhar Status
-            </h2>
+            <div className="card-heading">
+              <span className="card-heading-icon" aria-hidden="true">
+                <TaskView size={24} />
+              </span>
+              <h2 className="checkin-title">
+                Acompanhar Status
+              </h2>
+            </div>
             <p className="checkin-subtitle">
               Já solicitou uma avaliação? Consulte o andamento pelo SITE ID.
             </p>
@@ -247,6 +258,8 @@ export default function CheckInPage() {
           Certifique-se de que ambos os procedimentos foram concluídos e marque a opção no formulário.
         </p>
       </Modal>
+
+      <AppFooter />
     </div>
   );
 }
