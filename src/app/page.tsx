@@ -159,7 +159,7 @@ export default function CheckInPage() {
                   />
                   <Checkbox
                     id="checkin_confirm"
-                    labelText="Realizado Check-in e QCP3"
+                    labelText="Realizado Check-in"
                     checked={checkedIn}
                     onChange={(e, { checked }) => setCheckedIn(checked)}
                   />
@@ -252,10 +252,10 @@ export default function CheckInPage() {
         onRequestSubmit={() => setShowModal(false)}
       >
         <p style={{ marginBottom: "1rem" }}>
-          É necessário realizar o <strong>Check-in</strong> e o <strong>QCP3</strong> antes de solicitar a avaliação.
+          É necessário realizar o <strong>Check-in</strong> antes de solicitar a avaliação.
         </p>
         <p style={{ color: "#525252", fontSize: "0.875rem" }}>
-          Certifique-se de que ambos os procedimentos foram concluídos e marque a opção no formulário.
+          Certifique-se de que o procedimento foi concluído e marque a opção no formulário.
         </p>
       </Modal>
 
